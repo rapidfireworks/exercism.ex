@@ -5,17 +5,23 @@ defmodule ProteinTranslation do
   @spec of_rna(String.t()) :: {atom, list(String.t())}
   def of_rna(rna) do
     to_charlist(rna)
-    |> translate
+    |> Stream.chunk_every(3)
+    |> Enum.reduce_while({:ok, []}, &process/2)
+    |> post_process
   end
 
-  defp translate(''), do: {:ok, []}
-  defp translate(rna) do
-    {head, tail} = Enum.split(rna, 3)
+  defp process(codon, {:ok, proteins}) do
+    case of_codon(to_string(codon)) do
+      {:ok, "STOP"} -> {:halt, {:ok, proteins}}
+      {:ok, protein} -> {:cont, {:ok, [protein | proteins]}}
+      {:error, _reason} -> {:halt, {:error, "invalid RNA"}}
+    end
+  end
 
-    case {of_codon(to_string(head)), translate(tail)} do
-      {{:ok, "STOP"}, _} -> {:ok, []}
-      {{:ok, protein}, {:ok, proteins}} -> {:ok, [protein | proteins]}
-      _ -> {:error, "invalid RNA"}
+  defp post_process(result) do
+    case result do
+      {:ok, proteins} -> {:ok, Enum.reverse(proteins)}
+      {:error, _reason} -> result
     end
   end
 
