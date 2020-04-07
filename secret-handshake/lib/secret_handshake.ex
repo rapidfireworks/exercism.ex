@@ -30,7 +30,6 @@ defmodule SecretHandshake do
     end
   end
 
-  defp command(code)
   defp command(1), do: "wink"
   defp command(2), do: "double blink"
   defp command(4), do: "close your eyes"
