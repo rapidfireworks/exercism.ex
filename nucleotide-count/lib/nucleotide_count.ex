@@ -28,15 +28,7 @@ defmodule NucleotideCount do
   @spec histogram(charlist()) :: map()
   def histogram(strand) do
     @nucleotides
-    |> Map.new(&({&1, 0}))
-    |> histogram(strand)
-  end
-
-  defp histogram(histogram, strand)
-  defp histogram(histogram, ''), do: histogram
-  defp histogram(histogram, [nucleotide|tail]) do
-    histogram
-    |> Map.update!(nucleotide, &(&1 + 1))
-    |> histogram(tail)
+    |> Map.new(&{&1, 0})
+    |> Map.merge(Enum.frequencies(strand))
   end
 end
