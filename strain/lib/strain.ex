@@ -6,14 +6,8 @@ defmodule Strain do
   Do not use `Enum.filter`.
   """
   @spec keep(list :: list(any), fun :: (any -> boolean)) :: list(any)
-  def keep(list, fun)
-  def keep([], _fun), do: []
-  def keep([head|tail], fun) do
-    if fun.(head) do
-      [head|keep(tail, fun)]
-    else
-      keep(tail, fun)
-    end
+  def keep(list, fun) do
+    for x <- list, fun.(x), do: x
   end
 
   @doc """
