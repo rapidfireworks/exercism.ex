@@ -5,6 +5,20 @@ defmodule StringSeries do
   return an empty list.
   """
   @spec slices(s :: String.t(), size :: integer) :: list(String.t())
-  def slices(_s, _size) do
+  def slices(s, size) do
+    if size > 0 do
+      to_charlist(s)
+      |> substrings(size)
+    else
+      []
+    end
+  end
+
+  defp substrings(letters, size) do
+    if length(letters) < size do
+      []
+    else
+      [to_string(Enum.take(letters, size)) | slices(Enum.drop(letters, 1), size)]
+    end
   end
 end
