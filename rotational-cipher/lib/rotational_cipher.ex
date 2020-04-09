@@ -11,19 +11,19 @@ defmodule RotationalCipher do
   @spec rotate(text :: String.t(), shift :: integer) :: String.t()
   def rotate(text, shift) do
     to_charlist(text)
-    |> Enum.map(&rotate_letter(&1, shift))
+    |> Enum.map(&encode(&1, shift))
     |> to_string
   end
 
-  def rotate_letter(letter, shift) when letter in ?a..?z, do: ?a + clamp(letter - ?a + shift)
-  def rotate_letter(letter, shift) when letter in ?A..?Z, do: ?A + clamp(letter - ?A + shift)
-  def rotate_letter(letter, shift), do: letter
+  defp encode(letter, shift) when letter in ?a..?z, do: ?a + clamp(letter - ?a + shift)
+  defp encode(letter, shift) when letter in ?A..?Z, do: ?A + clamp(letter - ?A + shift)
+  defp encode(letter, _shift), do: letter
 
-  def clamp(offset) do
-    if offset < 0 do
-      rem(offset, @alphabet_count) + @alphabet_count
+  defp clamp(shift) do
+    if shift < 0 do
+      rem(shift, @alphabet_count) + @alphabet_count
     else
-      rem(offset, @alphabet_count)
+      rem(shift, @alphabet_count)
     end
   end
 end
