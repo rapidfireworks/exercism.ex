@@ -15,15 +15,11 @@ defmodule RotationalCipher do
     |> to_string
   end
 
-  defp encode(letter, shift) when letter in ?a..?z, do: ?a + clamp(letter - ?a + shift)
-  defp encode(letter, shift) when letter in ?A..?Z, do: ?A + clamp(letter - ?A + shift)
-  defp encode(letter, _shift), do: letter
-
-  defp clamp(shift) do
-    if shift < 0 do
-      rem(shift, @alphabet_count) + @alphabet_count
-    else
-      rem(shift, @alphabet_count)
+  defp encode(letter, shift) do
+    cond do
+      letter in ?a..?z -> ?a + Integer.mod(letter - ?a + shift, @alphabet_count)
+      letter in ?A..?Z -> ?A + Integer.mod(letter - ?A + shift, @alphabet_count)
+      true -> letter
     end
   end
 end
