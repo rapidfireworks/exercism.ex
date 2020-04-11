@@ -7,10 +7,22 @@ defmodule RunLengthEncoder do
   "2A3B4C" => "AABBBCCCC"
   """
   @spec encode(String.t()) :: String.t()
-  def encode(string) do
+  def encode(string), do: Regex.replace(~R/(.)\1*/, string, &compress/2)
+
+  defp compress(match, letter) do
+    case String.length(match) do
+      1 -> letter
+      count when count > 1 -> "#{count}#{letter}"
+    end
   end
 
   @spec decode(String.t()) :: String.t()
-  def decode(string) do
+  def decode(string), do: Regex.replace(~R/([[:digit:]]*)([^[:digit:]])/u, string, &extract/3)
+
+  defp extract(_match, "", letter), do: letter
+  defp extract(_match, digits, letter) do
+    case Integer.parse(digits) do
+      {count, _tail} -> String.duplicate(letter, count)
+    end
   end
 end
