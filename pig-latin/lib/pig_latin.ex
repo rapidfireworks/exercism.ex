@@ -13,24 +13,29 @@ defmodule PigLatin do
 
   Some groups are treated like vowels, including "yt" and "xr".
   """
+  defguard vowel?(letter) when letter in ["a", "e", "i", "o", "u"]
   defguard consonant?(letter) when letter not in ["a", "e", "i", "o", "u"]
 
   @spec translate(phrase :: String.t()) :: String.t()
   def translate(phrase) do
-    Regex.split(~R/\p{Z}+/, phrase)
-    |> Enum.map(&transform(String.graphemes(&1), []))
-    |> Enum.map(&Enum.join([&1, "a", "y"]))
-    |> Enum.join(" ")
+    Regex.split(~R/[[:space:]]+/u, phrase, trim: true)
+    |> Enum.map(&String.graphemes/1)
+    |> Enum.map_join(" ", &transform/1)
   end
 
-  defp transform([], result), do: result
-  defp transform(letters, result) do
+  defp transform(letters, suffix \\ [])
+
+  defp transform(letters, suffix) do
     case letters do
-      ["x", letter | _tail] when consonant?(letter) -> transform([], letters ++ result)
-      ["y", letter | _tail] when consonant?(letter) -> transform([], letters ++ result)
-      ["q", "u" | tail] -> transform(tail, result ++ ["q", "u"])
-      [letter | tail] when consonant?(letter) -> transform(tail, result ++ [letter])
-      _ -> transform([], letters ++ result)
+      [first, second | _tail]
+      when vowel?(first) or (first in ["x", "y"] and consonant?(second)) ->
+        Enum.join([letters, suffix, "a", "y"])
+
+      ["q", "u" | tail] ->
+        transform(tail, suffix ++ ["q", "u"])
+
+      [letter | tail] when consonant?(letter) ->
+        transform(tail, suffix ++ [letter])
     end
   end
 end
