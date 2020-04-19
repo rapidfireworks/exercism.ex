@@ -8,13 +8,9 @@ defmodule TwelveDays do
     "On the #{ordinalize(number)} day of Christmas my true love gave to me: #{gift_set(number)}."
   end
 
-  defp gift_set(number) do
-    cond do
-      number == 1 -> gift(number)
-      number == 2 -> "#{gift(number)}, and #{gift_set(number - 1)}"
-      number in [3, 4, 5, 6, 7, 8, 9, 10, 11, 12] -> "#{gift(number)}, #{gift_set(number - 1)}"
-    end
-  end
+  defp gift_set(1), do: gift(1)
+  defp gift_set(2), do: "#{gift(2)}, and #{gift(1)}"
+  defp gift_set(number), do: "#{gift(number)}, #{gift_set(number - 1)}"
 
   @doc """
   Given a `starting_verse` and an `ending_verse`, return the verses for each
@@ -22,18 +18,14 @@ defmodule TwelveDays do
   """
   @spec verses(starting_verse :: integer, ending_verse :: integer) :: String.t()
   def verses(starting_verse, ending_verse) do
-    starting_verse..ending_verse
-    |> Enum.map(&verse/1)
-    |> Enum.join("\n")
+    Enum.map_join(starting_verse..ending_verse, "\n", &verse/1)
   end
 
   @doc """
   Sing all 12 verses, in order, one verse per line.
   """
   @spec sing() :: String.t()
-  def sing do
-    verses(1, 12)
-  end
+  def sing, do: verses(1, 12)
 
   defp ordinalize(1), do: "first"
   defp ordinalize(2), do: "second"
