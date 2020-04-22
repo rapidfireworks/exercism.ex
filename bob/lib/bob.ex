@@ -31,5 +31,5 @@ defmodule Bob do
   end
 
   defp ask?(input), do: Regex.match?(~R/\?$/, input)
-  defp yell?(input), do: !Regex.match?(~R/(^[^[:alpha:]]+$|[[:lower:]])/u, input)
+  defp yell?(input), do: !Regex.match?(~R/^[^[:alpha:]]+$|[[:lower:]]/u, input)
 end
