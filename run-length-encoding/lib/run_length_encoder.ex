@@ -10,9 +10,9 @@ defmodule RunLengthEncoder do
   def encode(string), do: Regex.replace(~R/(.)\1*/, string, &compress/2)
 
   defp compress(match, letter) do
-    case String.length(match) do
-      1 -> letter
-      count when count > 1 -> "#{count}#{letter}"
+    case {Regex.match?(~R/[[:digit:]]/u, letter), String.length(match)} do
+      {false, 1} -> letter
+      {false, count} when count > 1 -> "#{count}#{letter}"
     end
   end
 
