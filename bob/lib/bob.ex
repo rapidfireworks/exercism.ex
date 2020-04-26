@@ -7,7 +7,7 @@ defmodule Bob do
   defp respond(""), do: "Fine. Be that way!"
 
   defp respond(input) do
-    if ask?(input) do
+    if String.ends_with?(input, "?") do
       answer(input)
     else
       reply(input)
@@ -15,7 +15,7 @@ defmodule Bob do
   end
 
   defp answer(input) do
-    if yell?(input) do
+    if shout?(input) do
       "Calm down, I know what I'm doing!"
     else
       "Sure."
@@ -23,13 +23,14 @@ defmodule Bob do
   end
 
   defp reply(input) do
-    if yell?(input) do
+    if shout?(input) do
       "Whoa, chill out!"
     else
       "Whatever."
     end
   end
 
-  defp ask?(input), do: Regex.match?(~R/\?$/, input)
-  defp yell?(input), do: !Regex.match?(~R/^[^[:alpha:]]*$|[[:lower:]]/u, input)
+  defp shout?(input) do
+    String.upcase(input) === input and String.downcase(input) !== input
+  end
 end
