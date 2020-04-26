@@ -3,18 +3,15 @@ defmodule Sublist do
   Returns whether the first list is a sublist or a superlist of the second list
   and if not whether it is equal or unequal to the second list.
   """
+  def compare(list, list), do: :equal
   def compare(left, right), do: compare(left, right, length(left), length(right))
-
-  defp compare(left, right, left_length, right_length) when left_length < right_length do
-    if sublist?(left, right, left_length, right_length), do: :sublist, else: :unequal
-  end
-
-  defp compare(left, right, left_length, right_length) when left_length === right_length do
-    if sublist?(left, right, left_length, right_length), do: :equal, else: :unequal
-  end
 
   defp compare(left, right, left_length, right_length) when left_length > right_length do
     if sublist?(right, left, right_length, left_length), do: :superlist, else: :unequal
+  end
+
+  defp compare(left, right, left_length, right_length) do
+    if sublist?(left, right, left_length, right_length), do: :sublist, else: :unequal
   end
 
   defp sublist?(sublist, superlist, sublist_size, superlist_size) do
@@ -26,12 +23,6 @@ defmodule Sublist do
   end
 
   defp start_with?([], _superlist), do: true
-
-  defp start_with?([sublist_head | sublist_tail], [superlist_head | superlist_tail]) do
-    if sublist_head === superlist_head do
-      start_with?(sublist_tail, superlist_tail)
-    else
-      false
-    end
-  end
+  defp start_with?(sublist, superlist) when hd(sublist) !== hd(superlist), do: false
+  defp start_with?(sublist, superlist), do: start_with?(tl(sublist), tl(superlist))
 end
