@@ -12,7 +12,20 @@ defmodule Pangram do
 
   """
 
+  @alphabet_count Enum.to_list(?a..?z) |> length()
+
   @spec pangram?(String.t()) :: boolean
   def pangram?(sentence) do
+    String.graphemes(sentence)
+    |> Enum.reduce(%MapSet{}, &put_alphabet/2)
+    |> MapSet.size() === @alphabet_count
+  end
+
+  defp put_alphabet(grapheme, letters) do
+    case {String.upcase(grapheme), String.downcase(grapheme), byte_size(grapheme)} do
+      {^grapheme, ^grapheme, _} -> letters
+      {_, lower, 1} -> MapSet.put(letters, lower)
+      _ -> letters
+    end
   end
 end
