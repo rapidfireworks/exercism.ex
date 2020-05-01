@@ -67,7 +67,7 @@ defmodule AnagramTest do
     assert matches == []
   end
 
-  @tag :pending
+  # @tag :pending
   test "anagrams must use all letters exactly once" do
     matches = Anagram.match("tapper", ~w(patter))
     assert matches == []
