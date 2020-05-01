@@ -13,7 +13,6 @@ defmodule PigLatin do
 
   Some groups are treated like vowels, including "yt" and "xr".
   """
-  defguard vowel?(letter) when letter in ["a", "e", "i", "o", "u"]
   defguard consonant?(letter) when letter not in ["a", "e", "i", "o", "u"]
 
   @spec translate(phrase :: String.t()) :: String.t()
@@ -23,19 +22,19 @@ defmodule PigLatin do
     |> Enum.map_join(" ", &transform/1)
   end
 
-  defp transform(letters, suffix \\ [])
+  defp transform(letters, result \\ [])
+  defp transform([], result), do: Enum.join([result, "a", "y"])
+  defp transform(["q", "u" | tail], result), do: transform(tail, [result, "q", "u"])
 
-  defp transform(letters, suffix) do
-    case letters do
-      [first, second | _tail]
-      when vowel?(first) or (first in ["x", "y"] and consonant?(second)) ->
-        Enum.join([letters, suffix, "a", "y"])
+  defp transform([head | tail] = letters, result) when consonant?(head) do
+    case tail do
+      [second | _rest] when head in ["x", "y"] and consonant?(second) ->
+        transform([], [letters, result])
 
-      ["q", "u" | tail] ->
-        transform(tail, suffix ++ ["q", "u"])
-
-      [letter | tail] when consonant?(letter) ->
-        transform(tail, suffix ++ [letter])
+      _ ->
+        transform(tail, [result, head])
     end
   end
+
+  defp transform(letters, result), do: transform([], [letters, result])
 end
