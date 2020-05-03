@@ -24,6 +24,13 @@ defmodule Phone do
   """
   @spec number(String.t()) :: String.t()
   def number(raw) do
+    numbers = Regex.replace(~R/[^[:alnum:]]+/, raw, "")
+
+    if Regex.match?(~R/^1?[^01]\d{2}[^01]\d{6}$/, numbers) do
+      String.slice(numbers, -10, 10)
+    else
+      String.duplicate("0", 10)
+    end
   end
 
   @doc """
@@ -48,6 +55,8 @@ defmodule Phone do
   """
   @spec area_code(String.t()) :: String.t()
   def area_code(raw) do
+    number(raw)
+    |> String.slice(0, 3)
   end
 
   @doc """
@@ -72,5 +81,7 @@ defmodule Phone do
   """
   @spec pretty(String.t()) :: String.t()
   def pretty(raw) do
+    number(raw)
+    |> String.replace(~R/^(\d{3})(\d{3})(\d{4})$/, "(\\1) \\2-\\3")
   end
 end
